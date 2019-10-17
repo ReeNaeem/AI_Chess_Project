@@ -19,10 +19,14 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
 	int initialX;
 	int initialY;
 	JPanel panels;
+  boolean playerTurn;
+  boolean endGame;
 	JLabel pieces;
 
 
     public ChessProject(){
+      playerTurn = true;
+      endGame = false;
         Dimension boardSize = new Dimension(600, 600);
 
         //  Use a Layered Pane for this application
@@ -136,8 +140,9 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
 		String tmp1 = awaitingPiece.getIcon().toString();
 		if(((tmp1.contains("Black")))){
 			oponent = true;
-      if(tmp1.contains("King")){
-      JOptionPane.showMessageDialog(null, "White team wins!");
+      if((tmp1.contains("King") && playerTurn)){
+      JOptionPane.showMessageDialog(null, "White Player wins!");
+      endGame = true;
       }
 		}
 		else{
@@ -153,8 +158,9 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     String tmp1 = awaitingPiece.getIcon().toString();
     if(((tmp1.contains("White")))){
       oponent = true;
-      if(tmp1.contains("King")){
-      JOptionPane.showMessageDialog(null, "Black team wins!");
+      if((tmp1.contains("King") && !playerTurn)){
+      JOptionPane.showMessageDialog(null, "Black Player wins!");
+      endGame = true;
       }
     }
     else{
@@ -162,6 +168,18 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
     }
     return oponent;
   }
+
+  private Boolean checkIfPieceIsKing(int newX, int newY){
+		Component c1 = chessBoard.findComponentAt(newX, newY);
+		if(newX <=0 || newX >=600 || newY <=0 || newY >=600){
+			return false;
+		}
+		else {
+			JLabel awaitingPiece = (JLabel)c1;
+			String tmp1 = awaitingPiece.getIcon().toString();
+			return ((tmp1.contains("King")));
+		}
+	}
 
 	/*
 		This method is called when we press the Mouse. So we need to find out what piece we have
@@ -225,7 +243,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
 			a pawn forward. A Pawn is able to take any of the opponent’s pieces but they have to be one
 			square forward and one square over, i.e. in a diagonal direction from the Pawns original position.
 			If a Pawn makes it to the top of the other side, the Pawn can turn into any other piece, for
-			demonstration purposes the Pawn here turns into a Queen.
+			demonstration purposes the Pawn here playerTurn into a Queen.
 		*/
     if(pieceName.contains("Queen")){
       Boolean intheway = false;
@@ -686,6 +704,23 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
         }
       }
     }
+// White Pawm ends ^
+
+  if(startX == landingX && startY == landingY){
+    validMove = false;
+  }
+
+  if (playerTurn && pieceName.contains("Black") || !playerTurn && pieceName.contains("White")){
+    validMove = false;
+  }
+
+  if(endGame){
+    System.exit(0);
+  }
+
+
+//
+
 		if(!validMove){
 			int location=0;
 			if(startY ==0){
@@ -744,6 +779,7 @@ public class ChessProject extends JFrame implements MouseListener, MouseMotionLi
 	        	}
 	    		chessPiece.setVisible(true);
 			}
+      playerTurn = !playerTurn;
 		}
     }
 
